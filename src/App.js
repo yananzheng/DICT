@@ -1,23 +1,18 @@
-import logo from './logo.svg';
+import { useState } from 'react'
+import Show from './pages/Show';
+import UploadFile from './pages/Upload';
 import './App.css';
 
+
 function App() {
+
+  const [current, setCurrent] = useState('upload');
+  const [data, setData] = useState([]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <UploadFile current={current} setCurrent={setCurrent} setData={setData} />
+      <Show current={current} setCurrent={setCurrent} data={data} />
     </div>
   );
 }

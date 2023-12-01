@@ -1,0 +1,25 @@
+.upload-main {
+    background-color: rgb(19, 35, 52);
+    width: 100vw;
+    height: 100vh;
+}
+
+.dragger {
+    width: 80vw;
+    height: 70vh;
+}
+
+.ant-upload-text {
+    color: white !important;
+}
+
+.ant-upload-hint {
+    color: white !important;
+}
+
+.title {
+    color: white;
+    font-size: xx-large;
+    font-weight: bolder;
+    padding: 5vh 0;
+}
