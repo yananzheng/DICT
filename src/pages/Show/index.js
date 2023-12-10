@@ -201,6 +201,11 @@ export default function Show(props){
         stateOption.series[1].data = stateArr;
         stateOption.yAxis.max = Math.max(stateArr);
         stateChart.setOption(stateOption);
+        if (data.length > 0) {
+            const day1 = Math.floor((new Date() - new Date(data[2][8])) / (1000 * 60 * 60 * 24));
+            const day2 = Math.floor((new Date(data[2][10]) - new Date()) / (1000 * 60 * 60 * 24));
+            setDays([day1, day2]);
+        }
     }, [JSON.stringify(data)]);
 
     useEffect(() => {
@@ -235,7 +240,7 @@ export default function Show(props){
         if (projects.length > 0) setProject(data[2]);
         if (projects.length === 0) projects.push({label: "请先上传文件", value: -1});
         setOptions(projects);
-        setNum(data.length - 1);
+        setNum(data.length - 2);
     }, [JSON.stringify(data)]);    
 
     return (
@@ -314,22 +319,28 @@ export default function Show(props){
                     <div className="middle-content-bottom-block">
                         <br/>
                         <div className="middle-content-row">
-                            <div style={{ marginRight: '1vw' }}><span className="middle-content-bolder">解决方案经理：</span>{project[14] || "无"}</div>
-                            <div><span className="middle-content-bolder">售中交付经理：</span>{project[15] || "无"}</div>
+                            <div style={{ marginRight: '1vw'}} className="middle-content-back middle-content-row"><span className="middle-content-bolder">解决方案经理：</span>{project[14] || "无"}</div>
+                            <div className="middle-content-back middle-content-row "><span className="middle-content-bolder">售中交付经理：</span>{project[15] || "无"}</div>
                         </div>
-                        <div><span className="middle-content-bolder">业主单位、联系人及联系方式：</span></div>
-                        <div>{project[11] || "无"}</div>
-                        <div><span className="middle-content-bolder">下家单位、联系人及联系方式：</span></div>
-                        <div>{project[12] || "无"}</div>
+                        <div className="middle-content-back">
+                            <div><span className="middle-content-bolder">业主单位、联系人及联系方式：</span></div>
+                            <div>{project[11] || "无"}</div>
+                        </div>
+                        <div className="middle-content-back">
+                            <div><span className="middle-content-bolder">下家单位、联系人及联系方式：</span></div>
+                            <div>{project[12] || "无"}</div>
+                        </div>
                     </div>
                 </div>
                 <div className="middle-content-warning">
                     <div className="middle-content-bottom-title">提示模块</div>
                     <div className="middle-content-warning-block">
                         <br/>
-                        <div><span className="middle-content-bolder">目前状态：</span>{project[13] || "无"}</div>
-                        <div>
+                        <div className="middle-content-back middle-content-row"><span className="middle-content-bolder">目前状态：</span>{project[13] || "无"}</div>
+                        <div className="middle-content-back middle-content-row">
                             <span style={{ marginRight: '1vw' }}><span className="middle-content-bolder">委托及时率提醒：</span>{isNaN(days[0]) ? "无" : (days[0] < 30 ? "剩" + days[0] + "天" : <span style={{color: "red"}}>报警!</span>)}</span>
+                        </div>
+                        <div className="middle-content-back middle-content-row">
                             <span className="middle-content-bolder">验收时间提醒：</span>{isNaN(days[1]) ? "无" : (days[1] < 30 ? "剩" + days[1] + "天" : <span style={{color: "red"}}>报警!</span>)}
                         </div>
                     </div>

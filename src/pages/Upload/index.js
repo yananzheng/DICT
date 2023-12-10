@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { InboxOutlined } from '@ant-design/icons';
 import { message, Upload, Modal, Radio, Space, } from 'antd';
 import './index.css'
-import Show from '../Show';
 
 const XLSX = require('xlsx');
 const { Dragger } = Upload;
@@ -25,7 +24,6 @@ export default function UploadFile(props) {
         if (!date) return "无";
         if (!isNaN(Number(date))) {
             const jsDate = new Date((date - 1) * 24 * 60 * 60 * 1000);
-            console.log("jsDate: ", jsDate);
             return date ? jsDate.getFullYear() - 70 + "-" + String(jsDate.getMonth() + 1).padStart(2, '0') + "-" + String(jsDate.getDate()).padStart(2, '0') : "无";
         } else {
             return date;
@@ -56,6 +54,12 @@ export default function UploadFile(props) {
 
     function handleOk() {
         const table = workbook.Sheets[value];
+        const tableKeys = Object.keys(table).filter((key) => key.indexOf("!") === -1);
+        const columns = tableKeys.reduce((arr, item) => {
+            const matches = item.match(/([a-zA-Z]+)([0-9]+)/);
+            if (matches[2] === '1') return arr.concat([matches[1]]);
+            else return arr;
+        }, []);
         const refValue = table['!ref']; // 获取工作表的 !ref 值
         const range = XLSX.utils.decode_range(refValue);
         const rowCount = (range?.e?.r || 0) - (range?.s?.r || 0) + 2;
@@ -69,18 +73,34 @@ export default function UploadFile(props) {
                 break;
             }
         }
-        console.log(realNum);
+        const jsonData = XLSX.utils.sheet_to_json(table);
+        console.log(jsonData);
+        console.log(table);
+
+        const names = ["项目名称", "录入进度", "ICT编号", "建设方式", "项目分类", "交接前后", "招标方式", "中标金额(元)", "中标日期", "要求终验时间", "计划终验时间", "业主单位、联系人", "下家单位、联系人及联系方式", "目前状态", "解决方案经理", "售中交付经理"];
+        const columnNames = names.reduce((arr, item) => {
+            console.log(item);
+            for (let i = 0; i < columns.length; i ++) {
+                console.log(columns[i] + "1", table[columns[i] + "1"].h);
+                if (table[columns[i] + "1"].h === item) {
+                    return arr.concat([columns[i]]);
+                }
+            }
+            return arr.concat(["None"]);
+        }, [])
+        
+        console.log(columnNames);
         if (realNum <= 2) message.error("文件不包含有效数据！");
         else {
-            let arr = new Array(realNum);
-            const columns = ["B", "J", "C", "F", "G", "H", "K", "M", "L", "N", "O", "P", "Q", "I", "D", "E"];
-            for (let i = 0; i < realNum; i ++) {
-                arr[i] = new Array(columns.length);
-                for (let j = 0; j < columns.length; j ++) {
-                    arr[i][j] = table[columns[j]+i]?.v || "";
+            let arr = new Array(realNum + 1);
+            // const columns = ["B", "J", "C", "F", "G", "H", "K", "M", "L", "N", "O", "P", "Q", "I", "D", "E"];
+            for (let i = 0; i < realNum + 1; i ++) {
+                arr[i] = new Array(columnNames.length);
+                for (let j = 0; j < columnNames.length; j ++) {
+                    arr[i][j] = table[columnNames[j]+i]?.v || "";
                     if (j === 8 || j === 9 || j === 10) arr[i][j] = getDate(arr[i][j]);
                 }
-            }            
+            }
             setData(arr);
             setCurrent("show");
         }
