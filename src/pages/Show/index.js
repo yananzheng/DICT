@@ -65,7 +65,7 @@ export default function Show(props){
             }
         ],
     };
-
+    
     let axisOption = {
         tooltip: {
           trigger: 'axis',
@@ -90,7 +90,7 @@ export default function Show(props){
         xAxis: [
           {
             type: 'category',
-            data: ['待委托', '委托在途', '在建', '已上线待验收'],
+            data: [],
             axisPointer: {
               type: 'shadow'
             }
@@ -190,16 +190,29 @@ export default function Show(props){
             useDirtyRect: false
         });
         const stateOption = JSON.parse(JSON.stringify(axisOption));
-        let stateArr = [0, 0, 0, 0];
+        console.log(data);
+        const stateOrg = data.reduce((acc, cur, index) => {
+            if (index < 2) return acc;
+            if (acc.includes(cur[13])) return acc;
+            else return acc.concat([cur[13]]);
+        }, []);
+        console.log(stateOrg);
+        let stateArr = new Array(stateOrg.length).fill(0);
         for (let i = 2; i < data.length; i ++) {
-            if (data[i][13] === "待委托") stateArr[0] += 1;
-            else if (data[i][13] === "委托在途") stateArr[1] += 1;
-            else if (data[i][13] === "在建") stateArr[2] += 1;
-            else stateArr[3] += 1;
+            for (let j = 0; j < stateOrg.length; j ++) {
+                if (data[i][13] === stateOrg[j]) stateArr[j] += 1;
+            }
+            // if (data[i][13] === "待委托") stateArr[0] += 1;
+            // else if (data[i][13] === "委托在途") stateArr[1] += 1;
+            // else if (data[i][13] === "在建") stateArr[2] += 1;
+            // else stateArr[3] += 1;
         }
         stateOption.series[0].data = stateArr;
         stateOption.series[1].data = stateArr;
-        stateOption.yAxis.max = Math.max(stateArr);
+        stateOption.yAxis[0].max = Math.ceil(Math.max(...stateArr) / 5) * 5;
+        stateOption.yAxis[0].interval = Math.ceil(Math.max(...stateArr) / 5);
+        stateOption.xAxis[0].data = stateOrg;
+        console.log(stateOption);
         stateChart.setOption(stateOption);
         if (data.length > 0) {
             const day1 = Math.floor((new Date() - new Date(data[2][8])) / (1000 * 60 * 60 * 24));
@@ -338,10 +351,10 @@ export default function Show(props){
                         <br/>
                         <div className="middle-content-back middle-content-row"><span className="middle-content-bolder">目前状态：</span>{project[13] || "无"}</div>
                         <div className="middle-content-back middle-content-row">
-                            <span style={{ marginRight: '1vw' }}><span className="middle-content-bolder">委托及时率提醒：</span>{isNaN(days[0]) ? "无" : (days[0] < 30 ? "剩" + days[0] + "天" : <span style={{color: "red"}}>报警!</span>)}</span>
+                            <span style={{ marginRight: '1vw' }}><span className="middle-content-bolder">委托及时率提醒：</span>{(isNaN(days[0]) || project[13] !== '委托在途') ? "无" : (days[0] < 30 ? "剩" + days[0] + "天！" : <span style={{color: "red"}}>报警！</span>)}</span>
                         </div>
                         <div className="middle-content-back middle-content-row">
-                            <span className="middle-content-bolder">验收时间提醒：</span>{isNaN(days[1]) ? "无" : (days[1] < 30 ? "剩" + days[1] + "天" : <span style={{color: "red"}}>报警!</span>)}
+                            <span className="middle-content-bolder">验收时间提醒：</span>{(isNaN(days[1]) || ["已验收待转维", "已转维"].includes(project[13])) ? "无" : (days[1] < 30 ? "剩" + days[1] + "天！" : <span style={{color: "red"}}>报警！</span>)}
                         </div>
                     </div>
                 </div>

@@ -88,8 +88,6 @@ export default function UploadFile(props) {
             }
             return arr.concat(["None"]);
         }, [])
-        
-        console.log(columnNames);
         if (realNum <= 2) message.error("文件不包含有效数据！");
         else {
             let arr = new Array(realNum + 1);
