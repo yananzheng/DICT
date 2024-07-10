@@ -351,10 +351,10 @@ export default function Show(props){
                         <br/>
                         <div className="middle-content-back middle-content-row"><span className="middle-content-bolder">目前状态：</span>{project[13] || "无"}</div>
                         <div className="middle-content-back middle-content-row">
+                            console.log("11111111111111", days[1])
                             <span style={{ marginRight: '1vw' }}><span className="middle-content-bolder">委托及时率提醒：</span>{(isNaN(days[0]) || project[13] !== '委托在途') ? "无" : (days[0] < 30 ? "剩" + days[0] + "天！" : <span style={{color: "red"}}>报警！</span>)}</span>
                         </div>
                         <div className="middle-content-back middle-content-row">
-                            <span>（实际天数：{days[1]}）</span>
                             <span className="middle-content-bolder">验收时间提醒：</span>{(isNaN([1]) || ["已验收待转维", "已转维"].includes(project[13])) ? "无" : (days[1] < 30 ? "剩" + days[1] + "天！" : <span style={{color: "red"}}>报警！</span>)}
                         </div>
                     </div>
